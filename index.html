@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html class="dark scroll-smooth" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>NITHISH M | Portfolio</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Inter:wght@400&amp;display=swap" rel="stylesheet"/>
+    
+    <!-- Tailwind Configuration -->
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-primary": "#6d3bd7",
+                        "surface-container-high": "#2a2a2a",
+                        "on-surface": "#e5e2e1",
+                        "surface": "#131313",
+                        "on-surface-variant": "#cbc3d7",
+                        "primary": "#d0bcff",
+                        "secondary": "#4cd7f6",
+                        "surface-container-lowest": "#0e0e0e",
+                        "on-tertiary-fixed-variant": "#444749",
+                    },
+                    spacing: {
+                        "section-gap": "160px",
+                        "margin-mobile": "20px",
+                        "gutter": "32px",
+                        "base": "8px",
+                        "container-max": "1440px"
+                    },
+                    fontFamily: {
+                        "headline-lg": ["Archivo Narrow", "sans-serif"],
+                        "label-mono": ["JetBrains Mono", "monospace"],
+                        "display-xl": ["Archivo Narrow", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #050505;
+            color: #e5e2e1;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #d0bcff, #4cd7f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Scroll Animations (Fade In & Fade Out) */
+        @media (prefers-reduced-motion: no-preference) {
+            .reveal-element {
+                opacity: 0;
+                transform: translateY(30px) scale(0.98);
+                transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
+                            transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+                will-change: opacity, transform;
+            }
+            
+            .reveal-element.visible {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+
+            .parallax {
+                will-change: transform;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .reveal-element { opacity: 1; transform: none; }
+            .typewriter-text { visibility: visible !important; }
+            .typewriter-cursor { display: none !important; }
+            .parallax { transform: none !important; }
+            .scanning-pulse, .circuit-path, .crypto-ring, .crypto-ring-reverse { animation: none !important; }
+        }
+
+        /* Global Background Elements */
+        .neural-grid {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -3;
+            pointer-events: none;
+        }
+
+        .scanning-pulse {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 15vh;
+            background: linear-gradient(to bottom, transparent, rgba(109, 59, 215, 0.15), transparent);
+            z-index: -2;
+            pointer-events: none;
+            will-change: transform;
+        }
+
+        /* Ambient Orbs */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.12;
+            z-index: -2;
+            animation: float 25s infinite ease-in-out alternate;
+            will-change: transform;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(60px, -40px) scale(1.15); }
+        }
+
+        /* SVG Background Animations */
+        .circuit-path {
+            stroke-dasharray: 20 40;
+            animation: dash 35s linear infinite;
+        }
+        
+        .crypto-ring {
+            transform-origin: 500px 500px;
+            animation: spin-slow 50s linear infinite;
+        }
+        
+        .crypto-ring-reverse {
+            transform-origin: 500px 500px;
+            animation: spin-slow-reverse 70s linear infinite;
+        }
+
+        @keyframes dash { to { stroke-dashoffset: -1000; } }
+        @keyframes spin-slow { to { transform: rotate(360deg); } }
+        @keyframes spin-slow-reverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
+
+        /* Card Interactions */
+        .card-hover-container {
+            position: relative;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+        }
+
+        .card-hover-container:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 30px -10px rgba(109, 59, 215, 0.3);
+        }
+
+        /* Advanced CSS Border Masking for the hover trace */
+        .card-hover-container::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            padding: 1px;
+            border-radius: 0.5rem;
+            background: transparent;
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        .data-packet-border {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #d0bcff, #4cd7f6, transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .card-hover-container:hover .data-packet-border {
+            opacity: 1;
+            animation: borderTrace 2s linear infinite;
+        }
+
+        @keyframes borderTrace {
+            0% { top: 0; left: -100%; width: 100%; height: 2px; }
+            25% { top: 0; left: 100%; width: 100%; height: 2px; }
+            25.01% { top: -100%; left: calc(100% - 2px); width: 2px; height: 100%; }
+            50% { top: 100%; left: calc(100% - 2px); width: 2px; height: 100%; }
+            50.01% { top: calc(100% - 2px); left: 100%; width: 100%; height: 2px; }
+            75% { top: calc(100% - 2px); left: -100%; width: 100%; height: 2px; }
+            75.01% { top: 100%; left: 0; width: 2px; height: 100%; }
+            100% { top: -100%; left: 0; width: 2px; height: 100%; }
+        }
+
+        /* Typewriter Cursor */
+        .typewriter-cursor {
+            display: inline-block;
+            width: 0.4em;
+            height: 1em;
+            background-color: currentColor;
+            vertical-align: text-bottom;
+            animation: blink 1s step-end infinite;
+            margin-left: 4px;
+        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    </style>
+</head>
+<body class="antialiased relative selection:bg-primary selection:text-on-primary font-body-md text-body-md">
+
+    <!-- Global Background Environments -->
+    <div class="neural-grid"></div>
+    <div class="scanning-pulse" id="scanning-pulse"></div>
+    <div class="orb bg-primary w-[500px] h-[500px] top-[-100px] right-[-100px] parallax" data-speed="0.05"></div>
+    <div class="orb bg-secondary w-[600px] h-[600px] bottom-[20%] left-[-200px] parallax" data-speed="0.03"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 bg-[#050505]/80 backdrop-blur-md border-b border-white/5 font-label-mono text-primary flex justify-between items-center px-margin-mobile md:px-gutter py-base max-w-container-max mx-auto transition-all duration-300" id="navbar">
+        <div class="font-display-xl text-2xl md:text-headline-lg-mobile tracking-tighter text-on-surface uppercase cursor-pointer hover:text-primary transition-colors" onclick="window.scrollTo(0,0)">
+            NITHISH M
+        </div>
+        <ul class="hidden md:flex items-center gap-8">
+            <li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors duration-300" href="#about">About</a></li>
+            <li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors duration-300" href="#projects">Projects</a></li>
+            <li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors duration-300" href="#academic">Academic</a></li>
+            <li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors duration-300" href="#beyond">Beyond</a></li>
+        </ul>
+        <button class="bg-inverse-primary text-white px-6 py-2.5 rounded text-sm font-medium hover:scale-95 transition-transform flex items-center gap-2 border-t border-white/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">
+            Connect
+        </button>
+    </nav>
+
+    <main class="max-w-container-max mx-auto px-margin-mobile md:px-gutter pt-[100px]">
+        
+        <!-- Hero Section -->
+        <section class="min-h-[100svh] lg:min-h-screen overflow-hidden flex flex-col justify-center items-center text-center relative mb-section-gap reveal-element z-10">
+            
+            <!-- Hero Background SVG -->
+            <div class="absolute inset-0 z-[-1] opacity-25 flex items-center justify-center parallax" data-speed="0.08">
+                <svg width="100%" height="100%" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+                    <defs>
+                        <linearGradient id="cryptoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#d0bcff" stop-opacity="0.9" />
+                            <stop offset="100%" stop-color="#4cd7f6" stop-opacity="0.9" />
+                        </linearGradient>
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                    </defs>
+                    <g stroke="url(#cryptoGrad)" fill="none" stroke-width="1.5" filter="url(#glow)">
+                        <path class="circuit-path" d="M100,500 L300,500 L400,300 L600,300 L700,500 L900,500" />
+                        <path class="circuit-path" d="M200,800 L300,600 L500,600 L600,800" />
+                        <path class="circuit-path" d="M400,300 L500,100 L700,100 L800,300" />
+                        <path class="circuit-path" d="M500,600 L500,800" />
+                        
+                        <!-- Nodes -->
+                        <circle cx="300" cy="500" r="4" fill="#d0bcff" />
+                        <circle cx="400" cy="300" r="4" fill="#4cd7f6" />
+                        <circle cx="600" cy="300" r="4" fill="#d0bcff" />
+                        <circle cx="700" cy="500" r="4" fill="#4cd7f6" />
+                        <circle cx="500" cy="600" r="6" fill="#d0bcff" />
+                        
+                        <!-- Rings -->
+                        <circle cx="500" cy="500" r="220" stroke-dasharray="4 16" class="crypto-ring" stroke-width="2"/>
+                        <circle cx="500" cy="500" r="280" stroke-dasharray="8 24" class="crypto-ring-reverse" stroke-width="1"/>
+                    </g>
+                </svg>
+            </div>
+
+            <div class="max-w-4xl parallax px-4" data-speed="0.03">
+                <span class="inline-block mb-8 px-4 py-1.5 glass-panel text-secondary font-label-mono text-xs rounded tracking-[0.2em] uppercase border border-secondary/20 hover:border-secondary/50 transition-colors duration-300">
+                    B.Tech CS Student // VIT Vellore
+                </span>
+                <h1 class="font-display-xl text-4xl md:text-6xl lg:text-[80px] mb-6 text-gradient pb-2 uppercase tracking-tighter leading-[1.1] typewriter-target" data-text="ENGINEERING THE FUTURE&lt;br/&gt;OF SECURE MOBILITY"></h1>
+                <p class="font-body-md text-on-surface-variant max-w-2xl mx-auto mb-12 text-lg leading-relaxed">
+                    First-Year B.Tech Student, Mobile Application Developer, and Cryptography Enthusiast building high-performance, secure digital experiences.
+                </p>
+                <a class="glass-panel text-white px-8 py-4 rounded font-label-mono text-sm hover:bg-white/5 hover:text-primary transition-all duration-300 flex items-center justify-center gap-3 w-fit mx-auto uppercase tracking-widest hover:scale-105 group" href="#projects">
+                    <span>Explore Projects</span>
+                    <span class="material-symbols-outlined group-hover:translate-y-1 transition-transform">arrow_downward</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="mb-section-gap reveal-element relative z-10" id="about">
+            <div class="grid grid-cols-4 md:grid-cols-12 gap-gutter">
+                <div class="col-span-4 md:col-span-12 mb-8 flex justify-between items-end border-b border-white/10 pb-4">
+                    <h2 class="font-headline-lg text-3xl md:text-5xl text-on-surface typewriter-target" data-text="ABOUT"></h2>
+                    <span class="font-label-mono text-xs tracking-widest text-secondary">01 // PROFILE</span>
+                </div>
+                <div class="col-span-4 md:col-span-12 glass-panel p-8 md:p-12 rounded-xl parallax" data-speed="0.015">
+                    <p class="font-body-md text-on-surface-variant text-lg md:text-xl leading-relaxed">
+                        I am Nithish M, a passionate First-Year B.Tech Computer Science student at VIT Vellore. My technical journey is driven by a profound interest in mobile application development and modern cryptographic paradigms. When I'm not coding, you can find me optimizing my Arch Linux setup or exploring innovative concepts like hydrogen blends for sustainable energy solutions. I thrive at the intersection of robust software engineering and deep analytical problem-solving.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section class="mb-section-gap reveal-element relative z-10" id="projects">
+            <div class="grid grid-cols-4 md:grid-cols-12 gap-gutter">
+                <div class="col-span-4 md:col-span-12 mb-8 flex justify-between items-end border-b border-white/10 pb-4">
+                    <h2 class="font-headline-lg text-3xl md:text-5xl text-on-surface typewriter-target" data-text="PROJECTS"></h2>
+                    <span class="font-label-mono text-xs tracking-widest text-secondary">02 // ARCHIVE</span>
+                </div>
+
+                <!-- Project 1 -->
+                <div class="col-span-4 md:col-span-6 card-hover-container glass-panel group parallax" data-speed="0.02">
+                    <div class="data-packet-border"></div>
+                    <div class="p-8 h-full flex flex-col">
+                        <div class="flex justify-between items-start mb-8">
+                            <div class="w-14 h-14 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-primary/20 transition-colors border border-white/10">
+                                <span class="material-symbols-outlined text-primary text-3xl">enhanced_encryption</span>
+                            </div>
+                            <span class="font-label-mono text-primary border border-primary/30 px-3 py-1.5 rounded text-xs tracking-widest bg-primary/5">C++ / PQC</span>
+                        </div>
+                        <h3 class="font-headline-lg text-2xl md:text-3xl mb-4 text-on-surface group-hover:text-primary transition-colors">SovereignVault</h3>
+                        <p class="font-body-md text-on-surface-variant leading-relaxed flex-grow">A secure vault implementation utilizing advanced Homomorphic Encryption (HE_Vault) and Post-Quantum Cryptography (PQC) techniques to ensure data remains secure even during computation.</p>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="col-span-4 md:col-span-6 card-hover-container glass-panel group parallax" data-speed="0.04">
+                    <div class="data-packet-border"></div>
+                    <div class="p-8 h-full flex flex-col">
+                        <div class="flex justify-between items-start mb-8">
+                            <div class="w-14 h-14 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-secondary/20 transition-colors border border-white/10">
+                                <span class="material-symbols-outlined text-secondary text-3xl">visibility</span>
+                            </div>
+                            <span class="font-label-mono text-secondary border border-secondary/30 px-3 py-1.5 rounded text-xs tracking-widest bg-secondary/5">Kotlin / OpenCV</span>
+                        </div>
+                        <h3 class="font-headline-lg text-2xl md:text-3xl mb-4 text-on-surface group-hover:text-secondary transition-colors">CircuitLens</h3>
+                        <p class="font-body-md text-on-surface-variant leading-relaxed flex-grow">An intelligent mobile application built with Kotlin and Jetpack Compose, integrating OpenCV for real-time circuit component recognition and analysis through the device camera.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Academic Focus Section -->
+        <section class="mb-section-gap reveal-element relative z-10" id="academic">
+            <div class="grid grid-cols-4 md:grid-cols-12 gap-gutter">
+                <div class="col-span-4 md:col-span-12 mb-8 flex justify-between items-end border-b border-white/10 pb-4">
+                    <h2 class="font-headline-lg text-3xl md:text-5xl text-on-surface typewriter-target" data-text="ACADEMIC FOCUS"></h2>
+                    <span class="font-label-mono text-xs tracking-widest text-secondary">03 // DISCIPLINES</span>
+                </div>
+                
+                <div class="col-span-4 md:col-span-6 lg:col-span-3 card-hover-container glass-panel group parallax" data-speed="0.01">
+                    <div class="data-packet-border"></div>
+                    <div class="p-6 h-full">
+                        <h3 class="font-headline-lg text-xl mb-3 text-on-surface group-hover:text-primary transition-colors">App Development</h3>
+                        <p class="font-body-md text-on-surface-variant text-sm leading-relaxed">Native Android development architecture using Kotlin &amp; Jetpack Compose.</p>
+                    </div>
+                </div>
+                <div class="col-span-4 md:col-span-6 lg:col-span-3 card-hover-container glass-panel group parallax" data-speed="0.03">
+                    <div class="data-packet-border"></div>
+                    <div class="p-6 h-full">
+                        <h3 class="font-headline-lg text-xl mb-3 text-on-surface group-hover:text-secondary transition-colors">Software Engineering</h3>
+                        <p class="font-body-md text-on-surface-variant text-sm leading-relaxed">Clean architecture, scalable design patterns, and low-level C++ rendering.</p>
+                    </div>
+                </div>
+                <div class="col-span-4 md:col-span-6 lg:col-span-3 card-hover-container glass-panel group parallax" data-speed="0.02">
+                    <div class="data-packet-border"></div>
+                    <div class="p-6 h-full">
+                        <h3 class="font-headline-lg text-xl mb-3 text-on-surface group-hover:text-primary transition-colors">Math &amp; Analytics</h3>
+                        <p class="font-body-md text-on-surface-variant text-sm leading-relaxed">Cryptographic foundations, probability metrics, and data-driven problem solving.</p>
+                    </div>
+                </div>
+                <div class="col-span-4 md:col-span-6 lg:col-span-3 card-hover-container glass-panel group parallax" data-speed="0.04">
+                    <div class="data-packet-border"></div>
+                    <div class="p-6 h-full">
+                        <h3 class="font-headline-lg text-xl mb-3 text-on-surface group-hover:text-secondary transition-colors">System Environments</h3>
+                        <p class="font-body-md text-on-surface-variant text-sm leading-relaxed">Linux administration, specifically kernel routing and Arch Linux optimization.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Beyond the Code Section -->
+        <section class="mb-section-gap reveal-element relative z-10" id="beyond">
+            <div class="grid grid-cols-4 md:grid-cols-12 gap-gutter">
+                <div class="col-span-4 md:col-span-12 mb-8 flex justify-between items-end border-b border-white/10 pb-4">
+                    <h2 class="font-headline-lg text-3xl md:text-5xl text-on-surface typewriter-target" data-text="BEYOND THE CODE"></h2>
+                    <span class="font-label-mono text-xs tracking-widest text-secondary">04 // INTERESTS</span>
+                </div>
+                
+                <div class="col-span-4 md:col-span-4 glass-panel p-8 rounded-xl text-center group parallax" data-speed="0.015">
+                    <span class="material-symbols-outlined text-primary text-5xl mb-6 block group-hover:scale-110 transition-transform duration-500">sports_motorsports</span>
+                    <h3 class="font-headline-lg text-2xl text-white group-hover:text-primary transition-colors">Formula 1</h3>
+                </div>
+                <div class="col-span-4 md:col-span-4 glass-panel p-8 rounded-xl text-center group parallax" data-speed="0.035">
+                    <span class="material-symbols-outlined text-secondary text-5xl mb-6 block group-hover:scale-110 transition-transform duration-500">sports_cricket</span>
+                    <h3 class="font-headline-lg text-2xl text-white group-hover:text-secondary transition-colors">Cricket (IPL)</h3>
+                </div>
+                <div class="col-span-4 md:col-span-4 glass-panel p-8 rounded-xl text-center group parallax" data-speed="0.025">
+                    <span class="material-symbols-outlined text-primary text-5xl mb-6 block group-hover:scale-110 transition-transform duration-500">sports_esports</span>
+                    <h3 class="font-headline-lg text-2xl text-white group-hover:text-primary transition-colors mb-2">Strategic Gaming</h3>
+                    <p class="font-label-mono text-xs text-on-surface-variant tracking-widest uppercase">CoC / Free Fire MAX</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-surface-container-lowest text-on-surface-variant font-label-mono w-full border-t border-white/10 py-12 px-margin-mobile md:px-gutter relative z-20">
+        <div class="max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="font-display-xl text-xl text-primary uppercase tracking-widest">
+                NITHISH M
+            </div>
+            <div class="text-xs tracking-wider text-center md:text-left text-white/40">
+                © 2026 NITHISH M. ALL RIGHTS RESERVED.
+            </div>
+            <ul class="flex gap-6 text-sm">
+                <li><a class="hover:text-secondary transition-colors duration-300" href="#">Github</a></li>
+                <li><a class="hover:text-secondary transition-colors duration-300" href="#">LinkedIn</a></li>
+                <li><a class="hover:text-secondary transition-colors duration-300" href="#">Twitter</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+            if (!prefersReducedMotion) {
+                // 1. Hardware Accelerated Scroll Events (Parallax & Scanner)
+                let isScrolling = false;
+                const scanner = document.getElementById("scanning-pulse");
+                const parallaxElements = document.querySelectorAll('.parallax');
+                const nav = document.getElementById('navbar');
+
+                window.addEventListener('scroll', () => {
+                    if (!isScrolling) {
+                        window.requestAnimationFrame(() => {
+                            const scrolled = window.scrollY;
+                            
+                            // Prevent calculation errors on extremely short pages
+                            const maxScroll = Math.max(1, document.body.scrollHeight - window.innerHeight);
+                            const scrollPercent = scrolled / maxScroll;
+                            
+                            // Update Scanner Position
+                            if(scanner) scanner.style.transform = `translateY(${scrollPercent * window.innerHeight}px)`;
+                            
+                            // Update Parallax Elements
+                            parallaxElements.forEach(el => {
+                                const speed = el.dataset.speed || 0.05;
+                                el.style.transform = `translateY(${-(scrolled * speed)}px)`;
+                            });
+
+                            // Navbar Background Blur Toggle
+                            if (scrolled > 50) {
+                                nav.classList.add('shadow-[0_4px_30px_rgba(0,0,0,0.5)]', 'bg-[#050505]/95');
+                                nav.classList.remove('bg-[#050505]/80');
+                            } else {
+                                nav.classList.remove('shadow-[0_4px_30px_rgba(0,0,0,0.5)]', 'bg-[#050505]/95');
+                                nav.classList.add('bg-[#050505]/80');
+                            }
+                            
+                            isScrolling = false;
+                        });
+                        isScrolling = true;
+                    }
+                }, { passive: true });
+
+                // 2. Typewriter Reveal (Runs Only Once Per Element)
+                const typeWriterObserver = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting && !entry.target.classList.contains('typed')) {
+                            // Mark as typed immediately so it doesn't re-trigger
+                            entry.target.classList.add('typed');
+                            entry.target.classList.remove('typewriter-text');
+                            typeText(entry.target);
+                            
+                            // Stop observing for typewriter to prevent re-typing on scroll
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                function typeText(element) {
+                    const textHTML = element.getAttribute('data-text');
+                    if (!textHTML) return;
+
+                    const tempDiv = document.createElement('div');
+                    tempDiv.innerHTML = textHTML;
+                    const nodes = Array.from(tempDiv.childNodes);
+                    
+                    element.innerHTML = '';
+                    let i = 0;
+                    let currentNodeIndex = 0;
+                    let currentTextContent = '';
+                    
+                    const cursor = document.createElement('span');
+                    cursor.className = 'typewriter-cursor';
+                    element.appendChild(cursor);
+
+                    function typeChar() {
+                        if (currentNodeIndex < nodes.length) {
+                            const node = nodes[currentNodeIndex];
+                            if (node.nodeType === Node.TEXT_NODE) {
+                                if (i < node.textContent.length) {
+                                    currentTextContent += node.textContent.charAt(i);
+                                    element.innerHTML = currentTextContent;
+                                    element.appendChild(cursor);
+                                    i++;
+                                    setTimeout(typeChar, 25 + Math.random() * 30);
+                                } else {
+                                    i = 0;
+                                    currentNodeIndex++;
+                                    setTimeout(typeChar, 40);
+                                }
+                            } else {
+                                currentTextContent += node.outerHTML;
+                                element.innerHTML = currentTextContent;
+                                element.appendChild(cursor);
+                                currentNodeIndex++;
+                                setTimeout(typeChar, 40);
+                            }
+                        } else {
+                            setTimeout(() => cursor.remove(), 2500);
+                        }
+                    }
+                    typeChar();
+                }
+
+                document.querySelectorAll('.typewriter-target').forEach((elem) => {
+                    elem.classList.add('typewriter-text');
+                    typeWriterObserver.observe(elem);
+                });
+            } else {
+                // Fallback for reduced motion
+                document.querySelectorAll('.typewriter-target').forEach((elem) => {
+                    elem.innerHTML = elem.getAttribute('data-text');
+                });
+            }
+
+            // 3. Scroll Reveal & Disappear Animation
+            // Elements fade in when entering view, and fade out when leaving view.
+            const observerOptions = { 
+                root: null, 
+                rootMargin: '0px', 
+                threshold: 0.1 
+            };
+            
+            const visibilityObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    // Toggle the 'visible' class based on intersection status
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    } else {
+                        // This creates the disappearing effect when scrolling past
+                        entry.target.classList.remove('visible');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.reveal-element').forEach((elem) => {
+                visibilityObserver.observe(elem);
+            });
+        });
+    </script>
+</body>
+</html>
