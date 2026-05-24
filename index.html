@@ -5,14 +5,11 @@
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>NITHISH M | Portfolio</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;600;700&amp;family=JetBrains+Mono:wght@500&amp;family=Inter:wght@400&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo+Narrow:wght@400;600;700&family=JetBrains+Mono:wght@500&family=Inter:wght@400&display=swap" rel="stylesheet"/>
     
-    <!-- Tailwind Configuration -->
     <script id="tailwind-config">
         tailwind.config = {
             darkMode: "class",
@@ -30,7 +27,7 @@
                         "on-tertiary-fixed-variant": "#444749",
                     },
                     spacing: {
-                        "section-gap": "160px",
+                        "section-gap": "140px",
                         "margin-mobile": "20px",
                         "gutter": "32px",
                         "base": "8px",
@@ -48,542 +45,723 @@
     </script>
 
     <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
         body {
             background-color: #050505;
             color: #e5e2e1;
             overflow-x: hidden;
+            margin: 0;
+            /* Create a new stacking context so fixed children stay in order */
+            isolation: isolate;
         }
 
-        /* Glassmorphism Utilities */
+        /* ─── Global Background Layer (z-index: 0) ─── */
+        /* Fixed backgrounds sit behind everything */
+        #bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .neural-grid {
+            position: absolute;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .scanning-pulse {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 18vh;
+            background: linear-gradient(to bottom, transparent, rgba(109,59,215,0.12), transparent);
+            will-change: transform;
+        }
+
+        /* Ambient orbs — inside the bg-layer, never interfere with layout */
+        .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(130px);
+            opacity: 0.11;
+            will-change: transform;
+        }
+        .orb-purple {
+            width: 600px;
+            height: 600px;
+            top: -120px;
+            right: -120px;
+            background: #d0bcff;
+            animation: orb-drift-a 28s ease-in-out infinite alternate;
+        }
+        .orb-cyan {
+            width: 700px;
+            height: 700px;
+            bottom: 10%;
+            left: -220px;
+            background: #4cd7f6;
+            animation: orb-drift-b 34s ease-in-out infinite alternate;
+        }
+
+        @keyframes orb-drift-a {
+            0%   { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, -30px) scale(1.12); }
+        }
+        @keyframes orb-drift-b {
+            0%   { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-40px, 50px) scale(1.1); }
+        }
+
+        /* ─── Navigation (z-index: 100) ─── */
+        /* FIX: nav uses position:fixed + full width. Container is *inside* nav, not on nav itself. */
+        #navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(5,5,5,0.8);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            transition: background 0.4s ease, box-shadow 0.4s ease;
+        }
+        #navbar.scrolled {
+            background: rgba(5,5,5,0.96);
+            box-shadow: 0 4px 40px rgba(0,0,0,0.6);
+        }
+        .nav-inner {
+            max-width: 1440px;
+            margin: 0 auto;
+            padding: 0 32px;
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        @media (max-width: 768px) {
+            .nav-inner { padding: 0 20px; }
+        }
+
+        /* ─── Main Content (z-index: 1, above bg-layer) ─── */
+        main {
+            position: relative;
+            z-index: 1;
+        }
+        footer {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ─── Glassmorphism ─── */
         .glass-panel {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            background: rgba(255,255,255,0.03);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.07);
+            box-shadow: 0 4px 24px rgba(0,0,0,0.15);
         }
 
         .text-gradient {
-            background: linear-gradient(135deg, #d0bcff, #4cd7f6);
+            background: linear-gradient(135deg, #d0bcff 30%, #4cd7f6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        /* Scroll Animations (Fade In & Fade Out) */
+        /* ─── Scroll Reveal ─── */
+        /* FIX: only fade-in, no fade-out. Disappearing content is jarring and breaks readability. */
         @media (prefers-reduced-motion: no-preference) {
             .reveal-element {
                 opacity: 0;
-                transform: translateY(30px) scale(0.98);
-                transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), 
-                            transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+                transform: translateY(28px);
+                transition:
+                    opacity 0.75s cubic-bezier(0.4, 0, 0.2, 1),
+                    transform 0.75s cubic-bezier(0.4, 0, 0.2, 1);
                 will-change: opacity, transform;
             }
-            
             .reveal-element.visible {
                 opacity: 1;
-                transform: translateY(0) scale(1);
+                transform: translateY(0);
             }
-
-            .parallax {
-                will-change: transform;
+            /* Stagger children */
+            .reveal-element .reveal-child {
+                opacity: 0;
+                transform: translateY(20px);
+                transition:
+                    opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
+                    transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             }
+            .reveal-element.visible .reveal-child:nth-child(1) { opacity:1; transform:translateY(0); transition-delay:0.1s; }
+            .reveal-element.visible .reveal-child:nth-child(2) { opacity:1; transform:translateY(0); transition-delay:0.2s; }
+            .reveal-element.visible .reveal-child:nth-child(3) { opacity:1; transform:translateY(0); transition-delay:0.3s; }
+            .reveal-element.visible .reveal-child:nth-child(4) { opacity:1; transform:translateY(0); transition-delay:0.4s; }
         }
 
         @media (prefers-reduced-motion: reduce) {
             .reveal-element { opacity: 1; transform: none; }
-            .typewriter-text { visibility: visible !important; }
+            .reveal-child   { opacity: 1; transform: none; }
             .typewriter-cursor { display: none !important; }
-            .parallax { transform: none !important; }
-            .scanning-pulse, .circuit-path, .crypto-ring, .crypto-ring-reverse { animation: none !important; }
+            .scanning-pulse, .circuit-path, .crypto-ring, .crypto-ring-reverse,
+            .orb-purple, .orb-cyan { animation: none !important; }
         }
 
-        /* Global Background Elements */
-        .neural-grid {
-            position: fixed;
-            inset: 0;
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-            background-size: 40px 40px;
-            z-index: -3;
-            pointer-events: none;
-        }
-
-        .scanning-pulse {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 15vh;
-            background: linear-gradient(to bottom, transparent, rgba(109, 59, 215, 0.15), transparent);
-            z-index: -2;
-            pointer-events: none;
-            will-change: transform;
-        }
-
-        /* Ambient Orbs */
-        .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(120px);
-            opacity: 0.12;
-            z-index: -2;
-            animation: float 25s infinite ease-in-out alternate;
-            will-change: transform;
-        }
-
-        @keyframes float {
-            0% { transform: translate(0, 0) scale(1); }
-            100% { transform: translate(60px, -40px) scale(1.15); }
-        }
-
-        /* SVG Background Animations */
+        /* ─── SVG Circuit Animations ─── */
         .circuit-path {
-            stroke-dasharray: 20 40;
-            animation: dash 35s linear infinite;
+            stroke-dasharray: 20 45;
+            animation: dash 30s linear infinite;
         }
-        
         .crypto-ring {
             transform-origin: 500px 500px;
-            animation: spin-slow 50s linear infinite;
+            animation: spin-cw 60s linear infinite;
         }
-        
         .crypto-ring-reverse {
             transform-origin: 500px 500px;
-            animation: spin-slow-reverse 70s linear infinite;
+            animation: spin-ccw 80s linear infinite;
         }
+        @keyframes dash    { to { stroke-dashoffset: -1000; } }
+        @keyframes spin-cw  { to { transform: rotate(360deg); } }
+        @keyframes spin-ccw { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
 
-        @keyframes dash { to { stroke-dashoffset: -1000; } }
-        @keyframes spin-slow { to { transform: rotate(360deg); } }
-        @keyframes spin-slow-reverse { from { transform: rotate(360deg); } to { transform: rotate(0deg); } }
-
-        /* Card Interactions */
+        /* ─── Card Interactions ─── */
+        /* FIX: removed parallax from individual cards — parallax + hover-lift caused jitter.
+           Cards now only use hover lift cleanly, no competing transforms. */
         .card-hover-container {
             position: relative;
-            border-radius: 0.5rem;
+            border-radius: 12px;
             overflow: hidden;
-            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s ease;
+            transition:
+                transform  0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+                box-shadow 0.4s ease,
+                border-color 0.3s ease;
+            border: 1px solid rgba(255,255,255,0.07);
+            background: rgba(255,255,255,0.03);
         }
-
         .card-hover-container:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 10px 30px -10px rgba(109, 59, 215, 0.3);
+            transform: translateY(-6px);
+            box-shadow: 0 16px 40px -12px rgba(109,59,215,0.35);
+            border-color: rgba(208,188,255,0.2);
         }
-
-        /* Advanced CSS Border Masking for the hover trace */
-        .card-hover-container::before {
+        /* Animated border trace on hover */
+        .card-hover-container::after {
             content: '';
             position: absolute;
             inset: 0;
-            padding: 1px;
-            border-radius: 0.5rem;
-            background: transparent;
-            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: xor;
-            mask-composite: exclude;
+            border-radius: 12px;
+            background: linear-gradient(135deg, rgba(208,188,255,0.15), rgba(76,215,246,0.1), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
             pointer-events: none;
         }
+        .card-hover-container:hover::after { opacity: 1; }
 
-        .data-packet-border {
+        /* Top edge accent glow on hover */
+        .card-hover-container .card-top-glow {
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 2px;
+            top: 0; left: 0; right: 0;
+            height: 1px;
             background: linear-gradient(90deg, transparent, #d0bcff, #4cd7f6, transparent);
             opacity: 0;
-            transition: opacity 0.3s ease;
-            pointer-events: none;
-            z-index: 10;
+            transition: opacity 0.4s ease;
         }
+        .card-hover-container:hover .card-top-glow { opacity: 1; }
 
-        .card-hover-container:hover .data-packet-border {
-            opacity: 1;
-            animation: borderTrace 2s linear infinite;
-        }
-
-        @keyframes borderTrace {
-            0% { top: 0; left: -100%; width: 100%; height: 2px; }
-            25% { top: 0; left: 100%; width: 100%; height: 2px; }
-            25.01% { top: -100%; left: calc(100% - 2px); width: 2px; height: 100%; }
-            50% { top: 100%; left: calc(100% - 2px); width: 2px; height: 100%; }
-            50.01% { top: calc(100% - 2px); left: 100%; width: 100%; height: 2px; }
-            75% { top: calc(100% - 2px); left: -100%; width: 100%; height: 2px; }
-            75.01% { top: 100%; left: 0; width: 2px; height: 100%; }
-            100% { top: -100%; left: 0; width: 2px; height: 100%; }
-        }
-
-        /* Typewriter Cursor */
+        /* ─── Typewriter Cursor ─── */
         .typewriter-cursor {
             display: inline-block;
-            width: 0.4em;
-            height: 1em;
-            background-color: currentColor;
+            width: 0.08em;
+            height: 0.9em;
+            background-color: #d0bcff;
             vertical-align: text-bottom;
+            margin-left: 3px;
+            border-radius: 1px;
             animation: blink 1s step-end infinite;
-            margin-left: 4px;
         }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        @keyframes blink { 0%, 100% { opacity:1; } 50% { opacity:0; } }
+
+        /* ─── Hero Badge ─── */
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .hero-badge-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #4cd7f6;
+            animation: pulse-dot 2s ease-in-out infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); box-shadow: 0 0 0 0 rgba(76,215,246,0.4); }
+            50%       { opacity: 0.8; transform: scale(1.2); box-shadow: 0 0 0 6px rgba(76,215,246,0); }
+        }
+
+        /* ─── Section header rule ─── */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 16px;
+            margin-bottom: 40px;
+        }
+
+        /* ─── Interests icons hover ─── */
+        .interest-card {
+            transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease;
+        }
+        .interest-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px -8px rgba(109,59,215,0.3);
+        }
+        .interest-icon {
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .interest-card:hover .interest-icon {
+            transform: scale(1.15) rotate(-3deg);
+        }
+
+        /* ─── Connect button ─── */
+        .connect-btn {
+            background: #6d3bd7;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            border-top: 1px solid rgba(255,255,255,0.18);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 2px 8px rgba(109,59,215,0.4);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+            cursor: pointer;
+        }
+        .connect-btn:hover {
+            transform: translateY(-1px);
+            background: #7c4ee6;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 4px 16px rgba(109,59,215,0.5);
+        }
+        .connect-btn:active { transform: scale(0.97); }
+
+        /* ─── CTA arrow ─── */
+        .cta-arrow {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        a:hover .cta-arrow { transform: translateY(4px); }
+
+        /* ─── Skill tag ─── */
+        .skill-tag-primary {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            color: #d0bcff;
+            border: 1px solid rgba(208,188,255,0.25);
+            padding: 4px 10px;
+            border-radius: 4px;
+            background: rgba(208,188,255,0.06);
+        }
+        .skill-tag-secondary {
+            font-family: "JetBrains Mono", monospace;
+            font-size: 11px;
+            letter-spacing: 0.1em;
+            color: #4cd7f6;
+            border: 1px solid rgba(76,215,246,0.25);
+            padding: 4px 10px;
+            border-radius: 4px;
+            background: rgba(76,215,246,0.06);
+        }
+
+        /* ─── Project icon box ─── */
+        .proj-icon-box {
+            width: 52px; height: 52px;
+            border-radius: 10px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.3s ease, border-color 0.3s ease;
+            flex-shrink: 0;
+        }
+        .card-hover-container:hover .proj-icon-box-primary {
+            background: rgba(208,188,255,0.12);
+            border-color: rgba(208,188,255,0.25);
+        }
+        .card-hover-container:hover .proj-icon-box-secondary {
+            background: rgba(76,215,246,0.12);
+            border-color: rgba(76,215,246,0.25);
+        }
+
+        /* ─── Footer links ─── */
+        .footer-link {
+            font-size: 13px;
+            color: rgba(255,255,255,0.4);
+            transition: color 0.25s ease;
+            text-decoration: none;
+        }
+        .footer-link:hover { color: #4cd7f6; }
     </style>
 </head>
-<body class="antialiased relative selection:bg-primary selection:text-on-primary font-body-md text-body-md">
+<body class="antialiased font-body-md">
 
-    <!-- Global Background Environments -->
-    <div class="neural-grid"></div>
-    <div class="scanning-pulse" id="scanning-pulse"></div>
-    <div class="orb bg-primary w-[500px] h-[500px] top-[-100px] right-[-100px] parallax" data-speed="0.05"></div>
-    <div class="orb bg-secondary w-[600px] h-[600px] bottom-[20%] left-[-200px] parallax" data-speed="0.03"></div>
+    <!-- ═══ Fixed Background Layer ═══ -->
+    <div id="bg-layer" aria-hidden="true">
+        <div class="neural-grid"></div>
+        <div class="scanning-pulse" id="scanning-pulse"></div>
+        <div class="orb orb-purple"></div>
+        <div class="orb orb-cyan"></div>
+    </div>
 
-    <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-50 bg-[#050505]/80 backdrop-blur-md border-b border-white/5 font-label-mono text-primary flex justify-between items-center px-margin-mobile md:px-gutter py-base max-w-container-max mx-auto transition-all duration-300" id="navbar">
-        <div class="font-display-xl text-2xl md:text-headline-lg-mobile tracking-tighter text-on-surface uppercase cursor-pointer hover:text-primary transition-colors" onclick="window.scrollTo(0,0)">
-            NITHISH M
+    <!-- ═══ Navigation ═══ -->
+    <nav id="navbar" aria-label="Main navigation">
+        <div class="nav-inner">
+            <div class="font-display-xl text-2xl tracking-tighter text-on-surface uppercase cursor-pointer hover:text-primary transition-colors duration-300"
+                 onclick="window.scrollTo({top:0,behavior:'smooth'})"
+                 role="button" tabindex="0" aria-label="Scroll to top">
+                NITHISH M
+            </div>
+            <ul class="hidden md:flex items-center gap-8 list-none m-0 p-0" role="list">
+                <li><a class="font-label-mono text-xs tracking-widest text-on-surface-variant hover:text-primary transition-colors duration-300" href="#about">About</a></li>
+                <li><a class="font-label-mono text-xs tracking-widest text-on-surface-variant hover:text-primary transition-colors duration-300" href="#projects">Projects</a></li>
+                <li><a class="font-label-mono text-xs tracking-widest text-on-surface-variant hover:text-primary transition-colors duration-300" href="#academic">Academic</a></li>
+                <li><a class="font-label-mono text-xs tracking-widest text-on-surface-variant hover:text-primary transition-colors duration-300" href="#beyond">Beyond</a></li>
+            </ul>
+            <button class="connect-btn font-label-mono" onclick="document.getElementById('footer').scrollIntoView({behavior:'smooth'})">
+                Connect
+            </button>
         </div>
-        <ul class="hidden md:flex items-center gap-8">
-            <li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors duration-300" href="#about">About</a></li>
-            <li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors duration-300" href="#projects">Projects</a></li>
-            <li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors duration-300" href="#academic">Academic</a></li>
-            <li><a class="text-sm text-on-surface-variant hover:text-primary transition-colors duration-300" href="#beyond">Beyond</a></li>
-        </ul>
-        <button class="bg-inverse-primary text-white px-6 py-2.5 rounded text-sm font-medium hover:scale-95 transition-transform flex items-center gap-2 border-t border-white/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]">
-            Connect
-        </button>
     </nav>
 
-    <main class="max-w-container-max mx-auto px-margin-mobile md:px-gutter pt-[100px]">
-        
-        <!-- Hero Section -->
-        <section class="min-h-[100svh] lg:min-h-screen overflow-hidden flex flex-col justify-center items-center text-center relative mb-section-gap reveal-element z-10">
-            
-            <!-- Hero Background SVG -->
-            <div class="absolute inset-0 z-[-1] opacity-25 flex items-center justify-center parallax" data-speed="0.08">
+    <!-- ═══ Main Content ═══ -->
+    <main class="max-w-[1440px] mx-auto px-5 md:px-8 pt-[80px]">
+
+        <!-- ─── Hero Section ─── -->
+        <section class="min-h-[100svh] flex flex-col justify-center items-center text-center relative mb-section-gap reveal-element" id="hero">
+
+            <!-- Hero SVG — isolated layer, no parallax transform conflict -->
+            <div class="absolute inset-0 z-0 opacity-20 flex items-center justify-center pointer-events-none" aria-hidden="true" id="hero-svg-wrap">
                 <svg width="100%" height="100%" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
                     <defs>
                         <linearGradient id="cryptoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#d0bcff" stop-opacity="0.9" />
-                            <stop offset="100%" stop-color="#4cd7f6" stop-opacity="0.9" />
+                            <stop offset="0%" stop-color="#d0bcff" stop-opacity="0.9"/>
+                            <stop offset="100%" stop-color="#4cd7f6" stop-opacity="0.9"/>
                         </linearGradient>
                         <filter id="glow">
-                            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-                            <feMerge>
-                                <feMergeNode in="coloredBlur"/>
-                                <feMergeNode in="SourceGraphic"/>
-                            </feMerge>
+                            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+                            <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
                         </filter>
                     </defs>
                     <g stroke="url(#cryptoGrad)" fill="none" stroke-width="1.5" filter="url(#glow)">
-                        <path class="circuit-path" d="M100,500 L300,500 L400,300 L600,300 L700,500 L900,500" />
-                        <path class="circuit-path" d="M200,800 L300,600 L500,600 L600,800" />
-                        <path class="circuit-path" d="M400,300 L500,100 L700,100 L800,300" />
-                        <path class="circuit-path" d="M500,600 L500,800" />
-                        
+                        <path class="circuit-path" d="M100,500 L300,500 L400,300 L600,300 L700,500 L900,500"/>
+                        <path class="circuit-path" d="M200,800 L300,600 L500,600 L600,800"/>
+                        <path class="circuit-path" d="M400,300 L500,100 L700,100 L800,300"/>
+                        <path class="circuit-path" d="M500,600 L500,800"/>
                         <!-- Nodes -->
-                        <circle cx="300" cy="500" r="4" fill="#d0bcff" />
-                        <circle cx="400" cy="300" r="4" fill="#4cd7f6" />
-                        <circle cx="600" cy="300" r="4" fill="#d0bcff" />
-                        <circle cx="700" cy="500" r="4" fill="#4cd7f6" />
-                        <circle cx="500" cy="600" r="6" fill="#d0bcff" />
-                        
+                        <circle cx="300" cy="500" r="4" fill="#d0bcff"/>
+                        <circle cx="400" cy="300" r="4" fill="#4cd7f6"/>
+                        <circle cx="600" cy="300" r="4" fill="#d0bcff"/>
+                        <circle cx="700" cy="500" r="4" fill="#4cd7f6"/>
+                        <circle cx="500" cy="600" r="6" fill="#d0bcff" opacity="0.9"/>
                         <!-- Rings -->
-                        <circle cx="500" cy="500" r="220" stroke-dasharray="4 16" class="crypto-ring" stroke-width="2"/>
-                        <circle cx="500" cy="500" r="280" stroke-dasharray="8 24" class="crypto-ring-reverse" stroke-width="1"/>
+                        <circle cx="500" cy="500" r="220" stroke-dasharray="4 18" class="crypto-ring" stroke-width="1.5"/>
+                        <circle cx="500" cy="500" r="290" stroke-dasharray="8 28" class="crypto-ring-reverse" stroke-width="1"/>
+                        <circle cx="500" cy="500" r="350" stroke-dasharray="2 40" class="crypto-ring" stroke-width="0.8" opacity="0.5"/>
                     </g>
                 </svg>
             </div>
 
-            <div class="max-w-4xl parallax px-4" data-speed="0.03">
-                <span class="inline-block mb-8 px-4 py-1.5 glass-panel text-secondary font-label-mono text-xs rounded tracking-[0.2em] uppercase border border-secondary/20 hover:border-secondary/50 transition-colors duration-300">
+            <!-- Hero Content -->
+            <div class="relative z-10 max-w-4xl px-4">
+                <span class="hero-badge glass-panel mb-8 inline-flex px-4 py-1.5 text-secondary font-label-mono text-xs rounded tracking-[0.18em] uppercase border border-secondary/20">
+                    <span class="hero-badge-dot"></span>
                     B.Tech CS Student // VIT Vellore
                 </span>
-                <h1 class="font-display-xl text-4xl md:text-6xl lg:text-[80px] mb-6 text-gradient pb-2 uppercase tracking-tighter leading-[1.1] typewriter-target" data-text="ENGINEERING THE FUTURE&lt;br/&gt;OF SECURE MOBILITY"></h1>
+                <h1 class="font-display-xl text-4xl md:text-6xl lg:text-[76px] mb-6 text-gradient pb-2 uppercase tracking-tighter leading-[1.08] typewriter-target"
+                    data-text="ENGINEERING THE FUTURE OF SECURE MOBILITY"></h1>
                 <p class="font-body-md text-on-surface-variant max-w-2xl mx-auto mb-12 text-lg leading-relaxed">
-                    First-Year B.Tech Student, Mobile Application Developer, and Cryptography Enthusiast building high-performance, secure digital experiences.
+                    First-Year B.Tech Student, Mobile Application Developer, and Cryptography Enthusiast
+                    building high-performance, secure digital experiences.
                 </p>
-                <a class="glass-panel text-white px-8 py-4 rounded font-label-mono text-sm hover:bg-white/5 hover:text-primary transition-all duration-300 flex items-center justify-center gap-3 w-fit mx-auto uppercase tracking-widest hover:scale-105 group" href="#projects">
+                <a class="glass-panel text-white px-8 py-4 rounded font-label-mono text-xs hover:bg-white/5 hover:text-primary transition-all duration-300 inline-flex items-center gap-3 uppercase tracking-widest hover:scale-105 group border border-white/10"
+                   href="#projects">
                     <span>Explore Projects</span>
-                    <span class="material-symbols-outlined group-hover:translate-y-1 transition-transform">arrow_downward</span>
+                    <span class="material-symbols-outlined cta-arrow text-lg">arrow_downward</span>
                 </a>
             </div>
         </section>
 
-        <!-- About Section -->
-        <section class="mb-section-gap reveal-element relative z-10" id="about">
-            <div class="grid grid-cols-4 md:grid-cols-12 gap-gutter">
-                <div class="col-span-4 md:col-span-12 mb-8 flex justify-between items-end border-b border-white/10 pb-4">
-                    <h2 class="font-headline-lg text-3xl md:text-5xl text-on-surface typewriter-target" data-text="ABOUT"></h2>
-                    <span class="font-label-mono text-xs tracking-widest text-secondary">01 // PROFILE</span>
-                </div>
-                <div class="col-span-4 md:col-span-12 glass-panel p-8 md:p-12 rounded-xl parallax" data-speed="0.015">
-                    <p class="font-body-md text-on-surface-variant text-lg md:text-xl leading-relaxed">
-                        I am Nithish M, a passionate First-Year B.Tech Computer Science student at VIT Vellore. My technical journey is driven by a profound interest in mobile application development and modern cryptographic paradigms. When I'm not coding, you can find me optimizing my Arch Linux setup or exploring innovative concepts like hydrogen blends for sustainable energy solutions. I thrive at the intersection of robust software engineering and deep analytical problem-solving.
-                    </p>
-                </div>
+        <!-- ─── About Section ─── -->
+        <section class="mb-section-gap reveal-element" id="about">
+            <div class="section-header">
+                <h2 class="font-headline-lg text-3xl md:text-5xl text-on-surface typewriter-target" data-text="ABOUT"></h2>
+                <span class="font-label-mono text-xs tracking-widest text-secondary">01 // PROFILE</span>
+            </div>
+            <div class="glass-panel p-8 md:p-12 rounded-xl">
+                <p class="font-body-md text-on-surface-variant text-lg md:text-xl leading-relaxed">
+                    I am Nithish M, a passionate First-Year B.Tech Computer Science student at VIT Vellore.
+                    My technical journey is driven by a profound interest in mobile application development
+                    and modern cryptographic paradigms. When I'm not coding, you can find me optimizing
+                    my Arch Linux setup or exploring innovative concepts like hydrogen blends for sustainable
+                    energy solutions. I thrive at the intersection of robust software engineering and deep
+                    analytical problem-solving.
+                </p>
             </div>
         </section>
 
-        <!-- Projects Section -->
-        <section class="mb-section-gap reveal-element relative z-10" id="projects">
-            <div class="grid grid-cols-4 md:grid-cols-12 gap-gutter">
-                <div class="col-span-4 md:col-span-12 mb-8 flex justify-between items-end border-b border-white/10 pb-4">
-                    <h2 class="font-headline-lg text-3xl md:text-5xl text-on-surface typewriter-target" data-text="PROJECTS"></h2>
-                    <span class="font-label-mono text-xs tracking-widest text-secondary">02 // ARCHIVE</span>
-                </div>
+        <!-- ─── Projects Section ─── -->
+        <section class="mb-section-gap reveal-element" id="projects">
+            <div class="section-header">
+                <h2 class="font-headline-lg text-3xl md:text-5xl text-on-surface typewriter-target" data-text="PROJECTS"></h2>
+                <span class="font-label-mono text-xs tracking-widest text-secondary">02 // ARCHIVE</span>
+            </div>
 
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- Project 1 -->
-                <div class="col-span-4 md:col-span-6 card-hover-container glass-panel group parallax" data-speed="0.02">
-                    <div class="data-packet-border"></div>
-                    <div class="p-8 h-full flex flex-col">
-                        <div class="flex justify-between items-start mb-8">
-                            <div class="w-14 h-14 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-primary/20 transition-colors border border-white/10">
-                                <span class="material-symbols-outlined text-primary text-3xl">enhanced_encryption</span>
+                <div class="card-hover-container reveal-child">
+                    <div class="card-top-glow"></div>
+                    <div class="p-8 h-full flex flex-col gap-6">
+                        <div class="flex justify-between items-start">
+                            <div class="proj-icon-box proj-icon-box-primary">
+                                <span class="material-symbols-outlined text-primary text-2xl">enhanced_encryption</span>
                             </div>
-                            <span class="font-label-mono text-primary border border-primary/30 px-3 py-1.5 rounded text-xs tracking-widest bg-primary/5">C++ / PQC</span>
+                            <span class="skill-tag-primary">C++ / PQC</span>
                         </div>
-                        <h3 class="font-headline-lg text-2xl md:text-3xl mb-4 text-on-surface group-hover:text-primary transition-colors">SovereignVault</h3>
-                        <p class="font-body-md text-on-surface-variant leading-relaxed flex-grow">A secure vault implementation utilizing advanced Homomorphic Encryption (HE_Vault) and Post-Quantum Cryptography (PQC) techniques to ensure data remains secure even during computation.</p>
+                        <div class="flex flex-col gap-3 flex-grow">
+                            <h3 class="font-headline-lg text-2xl md:text-3xl text-on-surface group-hover:text-primary transition-colors">SovereignVault</h3>
+                            <p class="font-body-md text-on-surface-variant leading-relaxed text-sm">
+                                A secure vault implementation utilizing advanced Homomorphic Encryption (HE_Vault)
+                                and Post-Quantum Cryptography techniques to ensure data remains secure even during computation.
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2 font-label-mono text-xs text-primary/60 hover:text-primary transition-colors cursor-pointer w-fit">
+                            <span>View project</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Project 2 -->
-                <div class="col-span-4 md:col-span-6 card-hover-container glass-panel group parallax" data-speed="0.04">
-                    <div class="data-packet-border"></div>
-                    <div class="p-8 h-full flex flex-col">
-                        <div class="flex justify-between items-start mb-8">
-                            <div class="w-14 h-14 rounded-lg bg-white/5 flex items-center justify-center group-hover:bg-secondary/20 transition-colors border border-white/10">
-                                <span class="material-symbols-outlined text-secondary text-3xl">visibility</span>
+                <div class="card-hover-container reveal-child">
+                    <div class="card-top-glow" style="background: linear-gradient(90deg, transparent, #4cd7f6, transparent);"></div>
+                    <div class="p-8 h-full flex flex-col gap-6">
+                        <div class="flex justify-between items-start">
+                            <div class="proj-icon-box proj-icon-box-secondary">
+                                <span class="material-symbols-outlined text-secondary text-2xl">visibility</span>
                             </div>
-                            <span class="font-label-mono text-secondary border border-secondary/30 px-3 py-1.5 rounded text-xs tracking-widest bg-secondary/5">Kotlin / OpenCV</span>
+                            <span class="skill-tag-secondary">Kotlin / OpenCV</span>
                         </div>
-                        <h3 class="font-headline-lg text-2xl md:text-3xl mb-4 text-on-surface group-hover:text-secondary transition-colors">CircuitLens</h3>
-                        <p class="font-body-md text-on-surface-variant leading-relaxed flex-grow">An intelligent mobile application built with Kotlin and Jetpack Compose, integrating OpenCV for real-time circuit component recognition and analysis through the device camera.</p>
+                        <div class="flex flex-col gap-3 flex-grow">
+                            <h3 class="font-headline-lg text-2xl md:text-3xl text-on-surface transition-colors">CircuitLens</h3>
+                            <p class="font-body-md text-on-surface-variant leading-relaxed text-sm">
+                                An intelligent mobile application built with Kotlin and Jetpack Compose,
+                                integrating OpenCV for real-time circuit component recognition and analysis
+                                through the device camera.
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2 font-label-mono text-xs text-secondary/60 hover:text-secondary transition-colors cursor-pointer w-fit">
+                            <span>View project</span>
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Academic Focus Section -->
-        <section class="mb-section-gap reveal-element relative z-10" id="academic">
-            <div class="grid grid-cols-4 md:grid-cols-12 gap-gutter">
-                <div class="col-span-4 md:col-span-12 mb-8 flex justify-between items-end border-b border-white/10 pb-4">
-                    <h2 class="font-headline-lg text-3xl md:text-5xl text-on-surface typewriter-target" data-text="ACADEMIC FOCUS"></h2>
-                    <span class="font-label-mono text-xs tracking-widest text-secondary">03 // DISCIPLINES</span>
-                </div>
-                
-                <div class="col-span-4 md:col-span-6 lg:col-span-3 card-hover-container glass-panel group parallax" data-speed="0.01">
-                    <div class="data-packet-border"></div>
-                    <div class="p-6 h-full">
-                        <h3 class="font-headline-lg text-xl mb-3 text-on-surface group-hover:text-primary transition-colors">App Development</h3>
-                        <p class="font-body-md text-on-surface-variant text-sm leading-relaxed">Native Android development architecture using Kotlin &amp; Jetpack Compose.</p>
+        <!-- ─── Academic Focus Section ─── -->
+        <section class="mb-section-gap reveal-element" id="academic">
+            <div class="section-header">
+                <h2 class="font-headline-lg text-3xl md:text-5xl text-on-surface typewriter-target" data-text="ACADEMIC FOCUS"></h2>
+                <span class="font-label-mono text-xs tracking-widest text-secondary">03 // DISCIPLINES</span>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div class="card-hover-container reveal-child p-6">
+                    <div class="card-top-glow"></div>
+                    <div class="mb-3">
+                        <span class="material-symbols-outlined text-primary text-2xl">smartphone</span>
                     </div>
+                    <h3 class="font-headline-lg text-xl mb-2 text-on-surface">App Development</h3>
+                    <p class="font-body-md text-on-surface-variant text-sm leading-relaxed">Native Android development architecture using Kotlin &amp; Jetpack Compose.</p>
                 </div>
-                <div class="col-span-4 md:col-span-6 lg:col-span-3 card-hover-container glass-panel group parallax" data-speed="0.03">
-                    <div class="data-packet-border"></div>
-                    <div class="p-6 h-full">
-                        <h3 class="font-headline-lg text-xl mb-3 text-on-surface group-hover:text-secondary transition-colors">Software Engineering</h3>
-                        <p class="font-body-md text-on-surface-variant text-sm leading-relaxed">Clean architecture, scalable design patterns, and low-level C++ rendering.</p>
+                <div class="card-hover-container reveal-child p-6">
+                    <div class="card-top-glow" style="background: linear-gradient(90deg, transparent, #4cd7f6, transparent);"></div>
+                    <div class="mb-3">
+                        <span class="material-symbols-outlined text-secondary text-2xl">architecture</span>
                     </div>
+                    <h3 class="font-headline-lg text-xl mb-2 text-on-surface">Software Engineering</h3>
+                    <p class="font-body-md text-on-surface-variant text-sm leading-relaxed">Clean architecture, scalable design patterns, and low-level C++ rendering.</p>
                 </div>
-                <div class="col-span-4 md:col-span-6 lg:col-span-3 card-hover-container glass-panel group parallax" data-speed="0.02">
-                    <div class="data-packet-border"></div>
-                    <div class="p-6 h-full">
-                        <h3 class="font-headline-lg text-xl mb-3 text-on-surface group-hover:text-primary transition-colors">Math &amp; Analytics</h3>
-                        <p class="font-body-md text-on-surface-variant text-sm leading-relaxed">Cryptographic foundations, probability metrics, and data-driven problem solving.</p>
+                <div class="card-hover-container reveal-child p-6">
+                    <div class="card-top-glow"></div>
+                    <div class="mb-3">
+                        <span class="material-symbols-outlined text-primary text-2xl">functions</span>
                     </div>
+                    <h3 class="font-headline-lg text-xl mb-2 text-on-surface">Math &amp; Analytics</h3>
+                    <p class="font-body-md text-on-surface-variant text-sm leading-relaxed">Cryptographic foundations, probability metrics, and data-driven problem solving.</p>
                 </div>
-                <div class="col-span-4 md:col-span-6 lg:col-span-3 card-hover-container glass-panel group parallax" data-speed="0.04">
-                    <div class="data-packet-border"></div>
-                    <div class="p-6 h-full">
-                        <h3 class="font-headline-lg text-xl mb-3 text-on-surface group-hover:text-secondary transition-colors">System Environments</h3>
-                        <p class="font-body-md text-on-surface-variant text-sm leading-relaxed">Linux administration, specifically kernel routing and Arch Linux optimization.</p>
+                <div class="card-hover-container reveal-child p-6">
+                    <div class="card-top-glow" style="background: linear-gradient(90deg, transparent, #4cd7f6, transparent);"></div>
+                    <div class="mb-3">
+                        <span class="material-symbols-outlined text-secondary text-2xl">terminal</span>
                     </div>
+                    <h3 class="font-headline-lg text-xl mb-2 text-on-surface">System Environments</h3>
+                    <p class="font-body-md text-on-surface-variant text-sm leading-relaxed">Linux administration, kernel routing, and Arch Linux optimization.</p>
                 </div>
             </div>
         </section>
 
-        <!-- Beyond the Code Section -->
-        <section class="mb-section-gap reveal-element relative z-10" id="beyond">
-            <div class="grid grid-cols-4 md:grid-cols-12 gap-gutter">
-                <div class="col-span-4 md:col-span-12 mb-8 flex justify-between items-end border-b border-white/10 pb-4">
-                    <h2 class="font-headline-lg text-3xl md:text-5xl text-on-surface typewriter-target" data-text="BEYOND THE CODE"></h2>
-                    <span class="font-label-mono text-xs tracking-widest text-secondary">04 // INTERESTS</span>
+        <!-- ─── Beyond the Code Section ─── -->
+        <section class="mb-section-gap reveal-element" id="beyond">
+            <div class="section-header">
+                <h2 class="font-headline-lg text-3xl md:text-5xl text-on-surface typewriter-target" data-text="BEYOND THE CODE"></h2>
+                <span class="font-label-mono text-xs tracking-widest text-secondary">04 // INTERESTS</span>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="glass-panel p-8 rounded-xl text-center interest-card reveal-child">
+                    <span class="material-symbols-outlined text-primary text-5xl mb-5 block interest-icon">sports_motorsports</span>
+                    <h3 class="font-headline-lg text-2xl text-white">Formula 1</h3>
+                    <p class="font-label-mono text-xs text-on-surface-variant tracking-widest uppercase mt-2 opacity-60">Racing / Strategy</p>
                 </div>
-                
-                <div class="col-span-4 md:col-span-4 glass-panel p-8 rounded-xl text-center group parallax" data-speed="0.015">
-                    <span class="material-symbols-outlined text-primary text-5xl mb-6 block group-hover:scale-110 transition-transform duration-500">sports_motorsports</span>
-                    <h3 class="font-headline-lg text-2xl text-white group-hover:text-primary transition-colors">Formula 1</h3>
+                <div class="glass-panel p-8 rounded-xl text-center interest-card reveal-child">
+                    <span class="material-symbols-outlined text-secondary text-5xl mb-5 block interest-icon">sports_cricket</span>
+                    <h3 class="font-headline-lg text-2xl text-white">Cricket</h3>
+                    <p class="font-label-mono text-xs text-on-surface-variant tracking-widest uppercase mt-2 opacity-60">IPL Fan</p>
                 </div>
-                <div class="col-span-4 md:col-span-4 glass-panel p-8 rounded-xl text-center group parallax" data-speed="0.035">
-                    <span class="material-symbols-outlined text-secondary text-5xl mb-6 block group-hover:scale-110 transition-transform duration-500">sports_cricket</span>
-                    <h3 class="font-headline-lg text-2xl text-white group-hover:text-secondary transition-colors">Cricket (IPL)</h3>
-                </div>
-                <div class="col-span-4 md:col-span-4 glass-panel p-8 rounded-xl text-center group parallax" data-speed="0.025">
-                    <span class="material-symbols-outlined text-primary text-5xl mb-6 block group-hover:scale-110 transition-transform duration-500">sports_esports</span>
-                    <h3 class="font-headline-lg text-2xl text-white group-hover:text-primary transition-colors mb-2">Strategic Gaming</h3>
-                    <p class="font-label-mono text-xs text-on-surface-variant tracking-widest uppercase">CoC / Free Fire MAX</p>
+                <div class="glass-panel p-8 rounded-xl text-center interest-card reveal-child">
+                    <span class="material-symbols-outlined text-primary text-5xl mb-5 block interest-icon">sports_esports</span>
+                    <h3 class="font-headline-lg text-2xl text-white">Strategic Gaming</h3>
+                    <p class="font-label-mono text-xs text-on-surface-variant tracking-widest uppercase mt-2 opacity-60">CoC / Free Fire MAX</p>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Footer -->
-    <footer class="bg-surface-container-lowest text-on-surface-variant font-label-mono w-full border-t border-white/10 py-12 px-margin-mobile md:px-gutter relative z-20">
-        <div class="max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
-            <div class="font-display-xl text-xl text-primary uppercase tracking-widest">
-                NITHISH M
-            </div>
-            <div class="text-xs tracking-wider text-center md:text-left text-white/40">
+    <!-- ═══ Footer ═══ -->
+    <footer class="bg-surface-container-lowest text-on-surface-variant font-label-mono w-full border-t border-white/8 py-12 px-5 md:px-8" id="footer">
+        <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="font-display-xl text-xl text-primary uppercase tracking-widest">NITHISH M</div>
+            <div class="text-xs tracking-wider text-center text-white/30">
                 © 2026 NITHISH M. ALL RIGHTS RESERVED.
             </div>
-            <ul class="flex gap-6 text-sm">
-                <li><a class="hover:text-secondary transition-colors duration-300" href="#">Github</a></li>
-                <li><a class="hover:text-secondary transition-colors duration-300" href="#">LinkedIn</a></li>
-                <li><a class="hover:text-secondary transition-colors duration-300" href="#">Twitter</a></li>
+            <ul class="flex gap-6 list-none m-0 p-0">
+                <li><a class="footer-link" href="#">Github</a></li>
+                <li><a class="footer-link" href="#">LinkedIn</a></li>
+                <li><a class="footer-link" href="#">Twitter</a></li>
             </ul>
         </div>
     </footer>
 
-    <!-- Scripts -->
+    <!-- ═══ Scripts ═══ -->
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    (function() {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-            if (!prefersReducedMotion) {
-                // 1. Hardware Accelerated Scroll Events (Parallax & Scanner)
-                let isScrolling = false;
-                const scanner = document.getElementById("scanning-pulse");
-                const parallaxElements = document.querySelectorAll('.parallax');
-                const nav = document.getElementById('navbar');
+        // ── 1. Navbar scroll state ──────────────────────────────────────────────
+        const nav = document.getElementById('navbar');
+        const scanner = document.getElementById('scanning-pulse');
+        let ticking = false;
 
-                window.addEventListener('scroll', () => {
-                    if (!isScrolling) {
-                        window.requestAnimationFrame(() => {
-                            const scrolled = window.scrollY;
-                            
-                            // Prevent calculation errors on extremely short pages
-                            const maxScroll = Math.max(1, document.body.scrollHeight - window.innerHeight);
-                            const scrollPercent = scrolled / maxScroll;
-                            
-                            // Update Scanner Position
-                            if(scanner) scanner.style.transform = `translateY(${scrollPercent * window.innerHeight}px)`;
-                            
-                            // Update Parallax Elements
-                            parallaxElements.forEach(el => {
-                                const speed = el.dataset.speed || 0.05;
-                                el.style.transform = `translateY(${-(scrolled * speed)}px)`;
-                            });
+        function onScroll() {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    const y = window.scrollY;
 
-                            // Navbar Background Blur Toggle
-                            if (scrolled > 50) {
-                                nav.classList.add('shadow-[0_4px_30px_rgba(0,0,0,0.5)]', 'bg-[#050505]/95');
-                                nav.classList.remove('bg-[#050505]/80');
-                            } else {
-                                nav.classList.remove('shadow-[0_4px_30px_rgba(0,0,0,0.5)]', 'bg-[#050505]/95');
-                                nav.classList.add('bg-[#050505]/80');
-                            }
-                            
-                            isScrolling = false;
-                        });
-                        isScrolling = true;
+                    // Navbar
+                    if (y > 60) nav.classList.add('scrolled');
+                    else nav.classList.remove('scrolled');
+
+                    // Scanning pulse — moves linearly through the page
+                    if (!prefersReducedMotion && scanner) {
+                        const maxScroll = Math.max(1, document.body.scrollHeight - window.innerHeight);
+                        scanner.style.transform = `translateY(${(y / maxScroll) * window.innerHeight}px)`;
                     }
-                }, { passive: true });
 
-                // 2. Typewriter Reveal (Runs Only Once Per Element)
-                const typeWriterObserver = new IntersectionObserver((entries, observer) => {
-                    entries.forEach(entry => {
-                        if (entry.isIntersecting && !entry.target.classList.contains('typed')) {
-                            // Mark as typed immediately so it doesn't re-trigger
-                            entry.target.classList.add('typed');
-                            entry.target.classList.remove('typewriter-text');
-                            typeText(entry.target);
-                            
-                            // Stop observing for typewriter to prevent re-typing on scroll
-                            observer.unobserve(entry.target);
-                        }
-                    });
-                }, { threshold: 0.5 });
-
-                function typeText(element) {
-                    const textHTML = element.getAttribute('data-text');
-                    if (!textHTML) return;
-
-                    const tempDiv = document.createElement('div');
-                    tempDiv.innerHTML = textHTML;
-                    const nodes = Array.from(tempDiv.childNodes);
-                    
-                    element.innerHTML = '';
-                    let i = 0;
-                    let currentNodeIndex = 0;
-                    let currentTextContent = '';
-                    
-                    const cursor = document.createElement('span');
-                    cursor.className = 'typewriter-cursor';
-                    element.appendChild(cursor);
-
-                    function typeChar() {
-                        if (currentNodeIndex < nodes.length) {
-                            const node = nodes[currentNodeIndex];
-                            if (node.nodeType === Node.TEXT_NODE) {
-                                if (i < node.textContent.length) {
-                                    currentTextContent += node.textContent.charAt(i);
-                                    element.innerHTML = currentTextContent;
-                                    element.appendChild(cursor);
-                                    i++;
-                                    setTimeout(typeChar, 25 + Math.random() * 30);
-                                } else {
-                                    i = 0;
-                                    currentNodeIndex++;
-                                    setTimeout(typeChar, 40);
-                                }
-                            } else {
-                                currentTextContent += node.outerHTML;
-                                element.innerHTML = currentTextContent;
-                                element.appendChild(cursor);
-                                currentNodeIndex++;
-                                setTimeout(typeChar, 40);
-                            }
-                        } else {
-                            setTimeout(() => cursor.remove(), 2500);
-                        }
-                    }
-                    typeChar();
-                }
-
-                document.querySelectorAll('.typewriter-target').forEach((elem) => {
-                    elem.classList.add('typewriter-text');
-                    typeWriterObserver.observe(elem);
+                    ticking = false;
                 });
-            } else {
-                // Fallback for reduced motion
-                document.querySelectorAll('.typewriter-target').forEach((elem) => {
-                    elem.innerHTML = elem.getAttribute('data-text');
-                });
+                ticking = true;
             }
+        }
+        window.addEventListener('scroll', onScroll, { passive: true });
 
-            // 3. Scroll Reveal & Disappear Animation
-            // Elements fade in when entering view, and fade out when leaving view.
-            const observerOptions = { 
-                root: null, 
-                rootMargin: '0px', 
-                threshold: 0.1 
-            };
-            
-            const visibilityObserver = new IntersectionObserver((entries) => {
+        // ── 2. Scroll Reveal (one-shot: only reveal, never hide) ───────────────
+        // FIX: threshold 0.12 with rootMargin gives earlier trigger so content
+        // never pops in late. Once visible, it stays visible.
+        if (!prefersReducedMotion) {
+            const revealObserver = new IntersectionObserver((entries, obs) => {
                 entries.forEach(entry => {
-                    // Toggle the 'visible' class based on intersection status
                     if (entry.isIntersecting) {
                         entry.target.classList.add('visible');
-                    } else {
-                        // This creates the disappearing effect when scrolling past
-                        entry.target.classList.remove('visible');
+                        obs.unobserve(entry.target); // one-shot
                     }
                 });
-            }, observerOptions);
+            }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
-            document.querySelectorAll('.reveal-element').forEach((elem) => {
-                visibilityObserver.observe(elem);
+            document.querySelectorAll('.reveal-element').forEach(el => revealObserver.observe(el));
+        } else {
+            document.querySelectorAll('.reveal-element').forEach(el => el.classList.add('visible'));
+        }
+
+        // ── 3. Typewriter Effect ──────────────────────────────────────────────
+        function typeText(element) {
+            const text = element.getAttribute('data-text');
+            if (!text) return;
+
+            element.textContent = '';
+            const cursor = document.createElement('span');
+            cursor.className = 'typewriter-cursor';
+            element.appendChild(cursor);
+
+            let i = 0;
+            function tick() {
+                if (i < text.length) {
+                    // Insert before cursor
+                    element.insertBefore(document.createTextNode(text[i]), cursor);
+                    i++;
+                    // Vary speed: faster on spaces and most chars, slight pause on punctuation
+                    const ch = text[i - 1];
+                    const delay = /[.!?,]/.test(ch) ? 120 : 22 + Math.random() * 28;
+                    setTimeout(tick, delay);
+                } else {
+                    // Blink then remove cursor
+                    setTimeout(() => {
+                        cursor.style.transition = 'opacity 0.5s ease';
+                        cursor.style.opacity = '0';
+                        setTimeout(() => cursor.remove(), 500);
+                    }, 2200);
+                }
+            }
+            tick();
+        }
+
+        if (!prefersReducedMotion) {
+            const twObserver = new IntersectionObserver((entries, obs) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting && !entry.target.dataset.typed) {
+                        entry.target.dataset.typed = '1';
+                        obs.unobserve(entry.target);
+                        typeText(entry.target);
+                    }
+                });
+            }, { threshold: 0.6 });
+
+            document.querySelectorAll('.typewriter-target').forEach(el => {
+                el.textContent = ''; // clear placeholder text
+                twObserver.observe(el);
             });
-        });
+        } else {
+            document.querySelectorAll('.typewriter-target').forEach(el => {
+                el.textContent = el.getAttribute('data-text');
+            });
+        }
+
+    })();
     </script>
 </body>
 </html>
