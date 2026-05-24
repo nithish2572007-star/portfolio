@@ -178,38 +178,83 @@
             background-clip: text;
         }
 
-        /* ─── Scroll Reveal ─── */
-        /* FIX: only fade-in, no fade-out. Disappearing content is jarring and breaks readability. */
+        /* ─── Scroll Reveal & Disappear ─── */
+        /*
+         * Three states:
+         *   (default)   — below viewport: fade-in-ready (translateY up, opacity 0)
+         *   .visible    — in viewport: fully shown
+         *   .exited     — above viewport: drifts up + fades out + slight scale down
+         *
+         * The hero section is excluded from exit animation (it would vanish too fast).
+         */
         @media (prefers-reduced-motion: no-preference) {
+
+            /* ── ENTER state (below viewport, not yet seen) ── */
             .reveal-element {
                 opacity: 0;
-                transform: translateY(28px);
+                transform: translateY(36px) scale(0.99);
+                filter: blur(2px);
                 transition:
-                    opacity 0.75s cubic-bezier(0.4, 0, 0.2, 1),
-                    transform 0.75s cubic-bezier(0.4, 0, 0.2, 1);
-                will-change: opacity, transform;
+                    opacity  0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                    transform 0.8s cubic-bezier(0.4, 0, 0.2, 1),
+                    filter   0.8s cubic-bezier(0.4, 0, 0.2, 1);
+                will-change: opacity, transform, filter;
             }
+
+            /* ── VISIBLE state (in viewport) ── */
             .reveal-element.visible {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0) scale(1);
+                filter: blur(0px);
             }
-            /* Stagger children */
+
+            /* ── EXIT state (scrolled past, above viewport) ── */
+            /* Drifts upward, shrinks slightly, blurs out — cinematic parallax exit */
+            .reveal-element.exited {
+                opacity: 0;
+                transform: translateY(-28px) scale(0.97);
+                filter: blur(4px);
+                /* Exit is quicker than entrance — snappier feel */
+                transition:
+                    opacity  0.55s cubic-bezier(0.4, 0, 0.6, 1),
+                    transform 0.55s cubic-bezier(0.4, 0, 0.6, 1),
+                    filter   0.55s cubic-bezier(0.4, 0, 0.6, 1);
+            }
+
+            /* Hero never exits — it would disappear before you've scrolled anywhere */
+            #hero.reveal-element.exited {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0px);
+            }
+
+            /* ── Staggered children ── */
             .reveal-element .reveal-child {
                 opacity: 0;
-                transform: translateY(20px);
+                transform: translateY(22px);
+                filter: blur(1.5px);
                 transition:
-                    opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1),
-                    transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+                    opacity  0.65s cubic-bezier(0.4, 0, 0.2, 1),
+                    transform 0.65s cubic-bezier(0.4, 0, 0.2, 1),
+                    filter   0.65s cubic-bezier(0.4, 0, 0.2, 1);
             }
-            .reveal-element.visible .reveal-child:nth-child(1) { opacity:1; transform:translateY(0); transition-delay:0.1s; }
-            .reveal-element.visible .reveal-child:nth-child(2) { opacity:1; transform:translateY(0); transition-delay:0.2s; }
-            .reveal-element.visible .reveal-child:nth-child(3) { opacity:1; transform:translateY(0); transition-delay:0.3s; }
-            .reveal-element.visible .reveal-child:nth-child(4) { opacity:1; transform:translateY(0); transition-delay:0.4s; }
+            .reveal-element.visible .reveal-child:nth-child(1) { opacity:1; transform:translateY(0); filter:blur(0); transition-delay:0.08s; }
+            .reveal-element.visible .reveal-child:nth-child(2) { opacity:1; transform:translateY(0); filter:blur(0); transition-delay:0.18s; }
+            .reveal-element.visible .reveal-child:nth-child(3) { opacity:1; transform:translateY(0); filter:blur(0); transition-delay:0.28s; }
+            .reveal-element.visible .reveal-child:nth-child(4) { opacity:1; transform:translateY(0); filter:blur(0); transition-delay:0.38s; }
+
+            /* Children exit instantly with the parent — no delay on exit */
+            .reveal-element.exited .reveal-child {
+                opacity: 0;
+                transform: translateY(-16px);
+                filter: blur(3px);
+                transition-delay: 0s !important;
+            }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .reveal-element { opacity: 1; transform: none; }
-            .reveal-child   { opacity: 1; transform: none; }
+            .reveal-element, .reveal-element.exited { opacity: 1; transform: none; filter: none; }
+            .reveal-child   { opacity: 1; transform: none; filter: none; }
             .typewriter-cursor { display: none !important; }
             .scanning-pulse, .circuit-path, .crypto-ring, .crypto-ring-reverse,
             .orb-purple, .orb-cyan { animation: none !important; }
@@ -690,20 +735,40 @@
         }
         window.addEventListener('scroll', onScroll, { passive: true });
 
-        // ── 2. Scroll Reveal (one-shot: only reveal, never hide) ───────────────
-        // FIX: threshold 0.12 with rootMargin gives earlier trigger so content
-        // never pops in late. Once visible, it stays visible.
+        // ── 2. Bidirectional Scroll Animation (enter + exit) ─────────────────
+        // Two IntersectionObservers:
+        //   enterObserver — element slides in from bottom when scrolling down
+        //   exitObserver  — element drifts up + blurs out when scrolled past
+        // Hero section is CSS-guarded so it never exits.
         if (!prefersReducedMotion) {
-            const revealObserver = new IntersectionObserver((entries, obs) => {
+            const seenElements = new WeakSet();
+
+            const enterObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
+                        seenElements.add(entry.target);
                         entry.target.classList.add('visible');
-                        obs.unobserve(entry.target); // one-shot
+                        entry.target.classList.remove('exited');
                     }
                 });
-            }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+            }, { threshold: 0.08, rootMargin: '0px 0px -30px 0px' });
 
-            document.querySelectorAll('.reveal-element').forEach(el => revealObserver.observe(el));
+            const exitObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting && seenElements.has(entry.target)) {
+                        const rect = entry.target.getBoundingClientRect();
+                        if (rect.top < 0) {
+                            entry.target.classList.remove('visible');
+                            entry.target.classList.add('exited');
+                        }
+                    }
+                });
+            }, { threshold: 0, rootMargin: '0px 0px 0px 0px' });
+
+            document.querySelectorAll('.reveal-element').forEach(el => {
+                enterObserver.observe(el);
+                exitObserver.observe(el);
+            });
         } else {
             document.querySelectorAll('.reveal-element').forEach(el => el.classList.add('visible'));
         }
